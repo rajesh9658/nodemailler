@@ -69,7 +69,7 @@ app.post("/send-mail", async (req, res) => {
   `,
     };
     //simple msg 
-    
+
 
     await transporter.sendMail(mailOptions);
 
@@ -85,6 +85,56 @@ app.post("/send-mail", async (req, res) => {
     });
   }
 });
+
+
+app.post("/send-personalized-mails", async (req, res) => {
+  const { users } = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  try {
+    for (const user of users) {
+      const mailOptions = {
+        from: `"Your Company" <${process.env.EMAIL_USER}>`,
+        to: user.email,
+        subject: `Special Offer Just for You, ${user.name}! 🎁`,
+        html: `
+          <div style="font-family: Arial; padding: 20px;">
+            <h2>Hello ${user.name},</h2>
+            <p>We have an exclusive product recommendation just for you:</p>
+
+            <div style="border:1px solid #ddd; padding:15px; border-radius:8px;">
+              <h3>${user.product}</h3>
+              <p><strong>Price:</strong> ${user.price}</p>
+            </div>
+
+            <p>Let us know if you'd like to order.</p>
+
+            <p>Regards,<br/>Your Company Team</p>
+          </div>
+        `,
+      };
+
+      await transporter.sendMail(mailOptions);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Personalized emails sent successfully!",
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to send emails" });
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
