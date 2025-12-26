@@ -2,37 +2,40 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Yes, I am alive and well!");
 });
 
 app.post("/send-mail", async (req, res) => {
-  const { firstName, lastName, company, phone, message } = req.body;
+  const { firstName, lastName, company, phone, message, email } = req.body;
 
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "padhirajesh88@gmail.com",
-        pass: "tnzuzzyzfcnwruno"         }
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     const mailOptions = {
-      from: "padhirajesh88@gmail.com",
-      to: "padhirajesh89@gmail.com",
-      subject: `New Contact Form Submission from ${firstName} ${lastName}`,
+      from: `"Website Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: `New Contact Form Submission - ${firstName} ${lastName}`,
       text: `
-New Message from your website:
+New Message from Website
 
-First Name: ${firstName}
-Last Name: ${lastName}
+Name: ${firstName} ${lastName}
 Company: ${company}
+Email: ${email}
 Phone: ${phone}
 
 Message:
@@ -41,12 +44,19 @@ ${message}
     };
 
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "Message sent successfully!" });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to send message." });
+    res.status(200).json({
+      success: true,
+      message: "Message sent successfully!",
+    });
+  } catch (error) {
+    console.error("Email error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to send message",
+    });
   }
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
