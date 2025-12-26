@@ -26,22 +26,48 @@ app.post("/send-mail", async (req, res) => {
       },
     });
 
-    const mailOptions = {
-      from: `"Website Contact" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
-      subject: `New Contact Form Submission - ${firstName} ${lastName}`,
-      text: `
-New Message from Website
+const mailOptions = {
+  from: `"Website Contact" <${process.env.EMAIL_USER}>`,
+  to: process.env.EMAIL_USER,
+  subject: `📩 New Contact Message from ${firstName} ${lastName}`,
+  html: `
+    <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:20px;">
+      <div style="max-width:600px; margin:auto; background:#ffffff; padding:20px; border-radius:8px;">
+        <h2 style="color:#2c3e50;">New Contact Form Submission</h2>
 
-Name: ${firstName} ${lastName}
-Company: ${company}
-Email: ${email}
-Phone: ${phone}
+        <table style="width:100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding:8px; font-weight:bold;">Name:</td>
+            <td style="padding:8px;">${firstName} ${lastName}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px; font-weight:bold;">Email:</td>
+            <td style="padding:8px;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px; font-weight:bold;">Company:</td>
+            <td style="padding:8px;">${company}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px; font-weight:bold;">Phone:</td>
+            <td style="padding:8px;">${phone}</td>
+          </tr>
+        </table>
 
-Message:
-${message}
-      `,
-    };
+        <hr style="margin:20px 0" />
+
+        <h3>Message</h3>
+        <p style="white-space: pre-line;">${message}</p>
+
+        <hr />
+
+        <p style="font-size:12px; color:#777;">
+          This email was generated automatically from your website contact form.
+        </p>
+      </div>
+    </div>
+  `,
+};
 
     await transporter.sendMail(mailOptions);
 
