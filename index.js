@@ -26,11 +26,11 @@ app.post("/send-mail", async (req, res) => {
       },
     });
 
-const mailOptions = {
-  from: `"Website Contact" <${process.env.EMAIL_USER}>`,
-  to: process.env.EMAIL_USER,
-  subject: `📩 New Contact Message from ${firstName} ${lastName}`,
-  html: `
+    const mailOptions = {
+      from: `"Website Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: `📩 New Contact Message from ${firstName} ${lastName}`,
+      html: `
     <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:20px;">
       <div style="max-width:600px; margin:auto; background:#ffffff; padding:20px; border-radius:8px;">
         <h2 style="color:#2c3e50;">New Contact Form Submission</h2>
@@ -67,7 +67,9 @@ const mailOptions = {
       </div>
     </div>
   `,
-};
+    };
+    //simple msg 
+    
 
     await transporter.sendMail(mailOptions);
 
